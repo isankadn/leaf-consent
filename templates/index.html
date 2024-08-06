@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">Opt-Out Records</h2>
+<a href="{{ url_for('add_record') }}" class="btn btn-primary mb-3">Add New Record</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>School</th>
+            <th>Moodle ID</th>
+            <th>Actions</th>
+           <!-- <th>Edited</th>
+            <th>Actions</th> -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in records %}
+        <tr>
+            <td>{{ record.id }}</td>
+            <td>{{ record.email }}</td>
+            <td>{{ record.school }}</td>
+            <td>{{ record.moodle_id }}</td>
+            <!-- <td>{{ record.created.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            <td>{{ record.edited.strftime('%Y-%m-%d %H:%M:%S') }}</td> -->
+            <td>
+                <a href="{{ url_for('edit_record', id=record.id) }}" class="btn btn-sm btn-primary">Edit</a>
+                <form action="{{ url_for('delete_record', id=record.id) }}" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this record?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
