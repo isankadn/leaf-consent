@@ -3,15 +3,14 @@ version: '3.8'
 services:
   web:
     build: .
-    command: sh -c "python -c 'from app import create_admin; create_admin()' && flask run --host=0.0.0.0 --reload"
+    command: sh -c "python -c 'from app import create_admin; create_admin()' && gunicorn --bind 0.0.0.0:5000 app:app"
     volumes:
       - .:/app
       - ./instance:/app/instance
     ports:
       - "5000:5000"
     environment:
-      - FLASK_ENV=development
-      - FLASK_DEBUG=1
+      - FLASK_ENV=production
       - SECRET_KEY=${SECRET_KEY}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - DATABASE_URL=sqlite:////app/instance/no_consent.db
