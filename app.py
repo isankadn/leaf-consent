@@ -11,6 +11,7 @@ from clickhouse_driver import Client
 import logging
 import hashlib
 from datetime import datetime
+from flask_migrate import Migrate
 
 # Load environment variables from .env file
 load_dotenv()
@@ -50,6 +51,7 @@ SCHOOLS = [
 ]
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
