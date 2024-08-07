@@ -37,6 +37,17 @@ MOODLE_API_GET_IDS_URL = f'{SK_MOODLE_API_BASE_URL}/api/get_moodle_ids'
 SK_API_KEY = os.environ.get('SK_API_KEY')
 SK_API_SECRET = os.environ.get('SK_API_SECRET')
 
+SCHOOLS = [
+    ('saikyo', 'Saikyo'),
+    ('dcat', 'Dcat'),
+    ('setsuryo', 'Setsuryo'),
+    ('kawaminami', 'Kawaminami'),
+    ('hikone', 'Hikone'),
+    ('kozu', 'Kozu'),
+    ('otsu', 'Otsu'),
+    ('zeze', 'Zeze')
+]
+
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -246,7 +257,7 @@ def add_record():
                 flash('An error occurred while adding the record')
         else:
             flash('Email and school are required')
-    return render_template('add.html')
+    return render_template('add.html', schools=SCHOOLS)
     
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -297,7 +308,7 @@ def edit_record(id):
                     return redirect(url_for('index'))
         else:
             flash('Email and school are required')
-    return render_template('edit.html', record=record)
+    return render_template('edit.html', record=record, schools=SCHOOLS)
 
 @app.route('/delete/<int:id>', methods=['POST'])
 @login_required
