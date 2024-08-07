@@ -77,7 +77,7 @@ class NoConsent(db.Model):
     email = db.Column(db.String(120), nullable=False, unique=True)
     school = db.Column(db.String(120), nullable=False)
     moodle_id = db.Column(db.String(20))
-    year = db.Column(db.Integer, nullable=False)  
+    year = db.Column(db.Integer, nullable=False, default=datetime.utcnow().year)
 
 def get_moodle_api_token():
     if not SK_API_KEY or not SK_API_SECRET:
