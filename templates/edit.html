@@ -11,7 +11,11 @@
             </div>
             <div class="mb-3">
                 <label for="school" class="form-label">School</label>
-                <input type="text" class="form-control" id="school" name="school" value="{{ record.school }}" required>
+                <select class="form-select" id="school" name="school" required>
+                    {% for value, label in schools %}
+                        <option value="{{ value }}" {% if value == record.school %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <button type="submit" class="btn btn-primary">Update Record</button>
         </form>

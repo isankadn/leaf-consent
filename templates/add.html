@@ -11,7 +11,12 @@
             </div>
             <div class="mb-3">
                 <label for="school" class="form-label">School</label>
-                <input type="text" class="form-control" id="school" name="school" required>
+                <select class="form-select" id="school" name="school" required>
+                    <option value="" selected disabled>Choose a school</option>
+                    {% for value, label in schools %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <button type="submit" class="btn btn-primary">Add Record</button>
         </form>
