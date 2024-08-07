@@ -10,6 +10,7 @@ import requests
 from clickhouse_driver import Client
 import logging
 import hashlib
+from datetime import datetime
 
 # Load environment variables from .env file
 load_dotenv()
@@ -74,6 +75,7 @@ class NoConsent(db.Model):
     email = db.Column(db.String(120), nullable=False, unique=True)
     school = db.Column(db.String(120), nullable=False)
     moodle_id = db.Column(db.String(20))
+    year = db.Column(db.Integer, nullable=False)  
 
 def get_moodle_api_token():
     if not SK_API_KEY or not SK_API_SECRET:
@@ -127,7 +129,7 @@ def hash_moodleid(moodle_id, encryption_salt, school):
     hasher.update(str(moodle_id).encode('utf-8'))
     return hasher.hexdigest()
 
-def clickhouse_operation(operation, school, email, moodle_id):
+def clickhouse_operation(operation, school, email, moodle_id, year):
     encryption_salt = os.environ.get('ENCRYPTION_SALT')
     if not encryption_salt:
         logger.error("ENCRYPTION_SALT is not set in the environment variables")
@@ -156,10 +158,10 @@ def clickhouse_operation(operation, school, email, moodle_id):
             client.execute(
                 """
                 INSERT INTO moodle_ids 
-                (school, email, moodleid, hashed_moodle_id, version) 
+                (school, email, moodleid, hashed_moodle_id, version, year) 
                 VALUES
                 """,
-                [(school, email, str(moodle_id), hashed_moodle_id, current_version + 1)]
+                [(school, email, str(moodle_id), hashed_moodle_id, current_version + 1, year]
             )
             logger.info(f"{'Added' if operation == 'add' else 'Updated'} record in ClickHouse: {email}, {moodle_id}")
 
@@ -209,9 +211,11 @@ def index():
 @app.route('/add', methods=['GET', 'POST'])
 @login_required
 def add_record():
+    current_year = datetime.now().year
     if request.method == 'POST':
         email = request.form.get('email')
         school = request.form.get('school')
+        year = request.form.get('year')
         if email and school:
             existing_record = NoConsent.query.filter_by(email=email).first()
             if existing_record:
@@ -239,12 +243,12 @@ def add_record():
                 return redirect(url_for('index'))
 
             # Update ClickHouse first
-            if not clickhouse_operation('add', school, email, moodle_id):
+            if not clickhouse_operation('add', school, email, moodle_id, int(year)):
                 flash('Failed to update ClickHouse. Please try again later..')
                 return redirect(url_for('index'))
 
             # If ClickHouse update is successful, add to SQLite
-            new_record = NoConsent(email=email, school=school, moodle_id=str(moodle_id))
+            new_record = NoConsent(email=email, school=school, moodle_id=str(moodle_id), year=int(year))
             db.session.add(new_record)
             
             try:
@@ -257,15 +261,17 @@ def add_record():
                 flash('An error occurred while adding the record')
         else:
             flash('Email and school are required')
-    return render_template('add.html', schools=SCHOOLS)
+    return render_template('add.html', schools=SCHOOLS, current_year=current_year)
     
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_record(id):
+    current_year = datetime.now().year
     record = NoConsent.query.get_or_404(id)
     if request.method == 'POST':
         email = request.form.get('email')
         school = request.form.get('school')
+        year = request.form.get('year')
         if email and school:
             existing_record = NoConsent.query.filter(NoConsent.email == email, NoConsent.id != id).first()
             if existing_record:
@@ -290,11 +296,12 @@ def edit_record(id):
                     return redirect(url_for('index'))
 
                 # Update ClickHouse
-                if clickhouse_operation('edit', school, email, moodle_id):
+                if clickhouse_operation('edit', school, email, moodle_id, int(year)):
                     # If ClickHouse update is successful, update SQLite
                     record.email = email
                     record.school = school
                     record.moodle_id = str(moodle_id)
+                    record.year = int(year)
                     try:
                         db.session.commit()
                         flash('Record updated successfully')
@@ -308,7 +315,7 @@ def edit_record(id):
                     return redirect(url_for('index'))
         else:
             flash('Email and school are required')
-    return render_template('edit.html', record=record, schools=SCHOOLS)
+    return render_template('edit.html', record=record, schools=SCHOOLS, current_year=current_year)
 
 @app.route('/delete/<int:id>', methods=['POST'])
 @login_required
