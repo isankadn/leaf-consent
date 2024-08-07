@@ -163,7 +163,7 @@ def clickhouse_operation(operation, school, email, moodle_id, year):
                 (school, email, moodleid, hashed_moodle_id, version, year) 
                 VALUES
                 """,
-                [(school, email, str(moodle_id), hashed_moodle_id, current_version + 1, year]
+                [(school, email, str(moodle_id), hashed_moodle_id, current_version + 1, year)]
             )
             logger.info(f"{'Added' if operation == 'add' else 'Updated'} record in ClickHouse: {email}, {moodle_id}")
 
