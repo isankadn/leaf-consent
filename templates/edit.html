@@ -17,6 +17,14 @@
                     {% endfor %}
                 </select>
             </div>
+            <div class="mb-3">
+                <label for="year" class="form-label">Year</label>
+                <select class="form-select" id="year" name="year" required>
+                    {% for year in range(2020, current_year + 2) %}
+                        <option value="{{ year }}" {% if year == record.year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
             <button type="submit" class="btn btn-primary">Update Record</button>
         </form>
     </div>
