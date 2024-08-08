@@ -324,7 +324,7 @@ def edit_record(id):
 def delete_record(id):
     record = NoConsent.query.get_or_404(id)
 
-    if clickhouse_operation('delete', record.school, record.email, record.moodle_id):
+    if clickhouse_operation('delete', record.school, record.email, record.moodle_id, record.year):
         try:
             db.session.delete(record)
             db.session.commit()
