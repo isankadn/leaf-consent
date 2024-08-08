@@ -5,6 +5,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os
+import socket
 from dotenv import load_dotenv
 import requests
 from clickhouse_driver import Client
@@ -78,6 +79,18 @@ class NoConsent(db.Model):
     school = db.Column(db.String(120), nullable=False)
     moodle_id = db.Column(db.String(20))
     year = db.Column(db.Integer, nullable=False, default=datetime.utcnow().year)
+
+def send_invalidate_message():
+    try:       
+        with socket.create_connection(('rust-socket-service', 8088), timeout=5) as sock:
+            sock.sendall(b"invalidate\n")
+            response = sock.recv(1024)
+            if response.strip() == b"OK":
+                logger.info("Invalidate message sent and acknowledged successfully")
+            else:
+                logger.warning(f"Unexpected response from socket server: {response}")
+    except Exception as e:
+        logger.error(f"Failed to send invalidate message: {e}")
 
 def get_moodle_api_token():
     if not SK_API_KEY or not SK_API_SECRET:
@@ -255,6 +268,7 @@ def add_record():
             
             try:
                 db.session.commit()
+                send_invalidate_message()
                 flash('Record added successfully')
                 return redirect(url_for('index'))
             except Exception as e:
@@ -306,6 +320,7 @@ def edit_record(id):
                     record.year = int(year)
                     try:
                         db.session.commit()
+                        send_invalidate_message()
                         flash('Record updated successfully')
                         return redirect(url_for('index'))
                     except Exception as e:
@@ -328,6 +343,7 @@ def delete_record(id):
         try:
             db.session.delete(record)
             db.session.commit()
+            send_invalidate_message()
             flash('Record deleted successfully')
         except Exception as e:
             db.session.rollback()
