@@ -82,7 +82,7 @@ class NoConsent(db.Model):
 
 def send_invalidate_message():
     try:       
-        with socket.create_connection(('rust-socket-service', 8088), timeout=5) as sock:
+        with socket.create_connection((os.environ.get('CACHE_SOCKET_HOST', 'localhost'), int(os.environ.get('CACHE_SOCKET_PORT', 8088))), timeout=5) as sock:
             sock.sendall(b"invalidate\n")
             response = sock.recv(1024)
             if response.strip() == b"OK":
