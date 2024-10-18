@@ -22,11 +22,6 @@ RUN adduser --disabled-password --gecos '' --uid 1000 appuser
 USER appuser
 
 # Default command for production
-# CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
 
-# Default command for development, comment out for production
-# RUN pip install watchgod
-# CMD ["watchgod", "gunicorn", "--bind", "0.0.0.0:5000", "app:app", "--reload"]
-ENV FLASK_ENV=development
-ENV FLASK_DEBUG=1
-CMD ["flask", "run", "--host=0.0.0.0", "--reload"]
+
