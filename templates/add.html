@@ -1,3 +1,4 @@
+<!-- add.html -->
 {% extends "base.html" %}
 
 {% block content %}
@@ -5,16 +6,17 @@
     <div class="col-md-6">
         <h2 class="mb-4">Add New Record</h2>
         <form method="POST">
+            {{ form.csrf_token }}
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                {{ form.email(class="form-control", id="email", required=true) }}
             </div>
             <div class="mb-3">
                 <label for="school" class="form-label">School</label>
                 <select class="form-select" id="school" name="school" required>
                     <option value="" selected disabled>Choose a school</option>
-                    {% for value, label in schools %}
-                        <option value="{{ value }}">{{ label }}</option>
+                    {% for school_key, school_name in schools %}
+                        <option value="{{ school_key }}">{{ school_name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -22,7 +24,7 @@
                 <label for="year" class="form-label">Year</label>
                 <select class="form-select" id="year" name="year" required>
                     <option value="" selected disabled>Choose a year</option>
-                    {% for year in range(2020, current_year + 2) %}
+                    {% for year in years %}
                         <option value="{{ year }}">{{ year }}</option>
                     {% endfor %}
                 </select>

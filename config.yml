@@ -1,0 +1,46 @@
+schools:
+  saikyo:
+    name: "Saikyo"
+    moodle_api_base_url: "http://10.236.173.145.nip.io:8090"
+    api_key: "client1"
+    api_secret: "secret1"
+  dcat:
+    name: "Dcat"
+    moodle_api_base_url: "https://dcat.moodle.api"
+    api_key: "sa"
+    api_secret: "sa"
+  setsuryo:
+    name: "Setsuryo"
+    moodle_api_base_url: "https://setsuryo.moodle.api"
+    api_key: "sa"
+    api_secret: "sa"
+  kawaminami:
+    name: "Kawaminami"
+    moodle_api_base_url: "https://kawaminami.moodle.api"
+    api_key: "sa"
+    api_secret: "sa"
+  hikone:
+    name: "Hikone"
+    moodle_api_base_url: "https://hikone.moodle.api"
+    api_key: "sa"
+    api_secret: "sa"
+  kozu:
+    name: "Kozu"
+    moodle_api_base_url: "https://kozu.moodle.api"
+    api_key: "sa"
+    api_secret: "sa"
+  otsu:
+    name: "Otsu"
+    moodle_api_base_url: "https://otsu.moodle.api"
+    api_key: "sa"
+    api_secret: "sa"
+  zeze:
+    name: "Zeze"
+    moodle_api_base_url: "https://zeze.moodle.api"
+    api_key: "sa"
+    api_secret: "sa"
+  kyoto:
+    name: "Kyoto University"
+    moodle_api_base_url: "http://10.236.173.93.nip.io:8091"
+    api_key: "client1"
+    api_secret: "secret1"
